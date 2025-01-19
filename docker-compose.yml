@@ -2,10 +2,10 @@ version: '3.8'
 
 services:
   web:
-    build: .
+    build: ./backend  # Указываем путь к директории с Dockerfile
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/app
+      - ./backend:/app/backend
     ports:
       - "8000:8000"
     depends_on:
