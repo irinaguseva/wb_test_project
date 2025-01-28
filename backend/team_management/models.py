@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Creator(models.Model):
     name = models.CharField(max_length=100, unique=True)
     money = models.FloatField(default=0)

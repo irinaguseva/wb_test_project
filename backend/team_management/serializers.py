@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Creator, Team, Member, TeamApplication
 
+
 class CreatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Creator
