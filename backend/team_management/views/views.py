@@ -1,9 +1,8 @@
-from rest_framework import viewsets
-from .models import Creator, Team, Member, TeamApplication
-from .serializers import CreatorSerializer, TeamSerializer, MemberSerializer, TeamApplicationSerializer
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
+from ..models import Creator, Team, Member, TeamApplication
+from ..serializers import CreatorSerializer, TeamSerializer, MemberSerializer, TeamApplicationSerializer
 
 class CreatorViewSet(viewsets.ModelViewSet):
     queryset = Creator.objects.all()
