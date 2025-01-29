@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views.views import CreatorViewSet, TeamViewSet, MemberViewSet, TeamApplicationViewSet
+from .views import CreatorViewSet, TeamViewSet, MemberViewSet, TeamApplicationViewSet
 
 
 router = DefaultRouter()
