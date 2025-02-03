@@ -1,6 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.db import transaction
 from ..models import Creator
 from ..serializers import CreatorSerializer
 
@@ -18,10 +19,16 @@ class CreatorViewSet(viewsets.ModelViewSet):
         if sender.money < amount:
             return Response({"error": "Not enough money"}, status=status.HTTP_400_BAD_REQUEST)
 
-        receiver = Creator.objects.get(id=receiver_id)
-        sender.money -= amount
-        receiver.money += amount
-        sender.save()
-        receiver.save()
+        try:
+            with transaction.atomic():
+                receiver = Creator.objects.select_for_update().get(id=receiver_id)
+                sender.money -= amount
+                receiver.money += amount
+                sender.save()
+                receiver.save()
+        except Creator.DoesNotExist:
+            return Response({"error": "Receiver not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"status": "Money transferred"}, status=status.HTTP_200_OK)
