@@ -16,8 +16,17 @@ class CreatorViewSet(viewsets.ModelViewSet):
         receiver_id = request.data.get('receiver_id')
         amount = request.data.get('amount')
 
+        if not receiver_id or not amount:
+            return Response(
+                {"error": "receiver_id and amount are required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         if sender.money < amount:
-            return Response({"error": "Not enough money"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Not enough money"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         try:
             with transaction.atomic():
@@ -26,9 +35,21 @@ class CreatorViewSet(viewsets.ModelViewSet):
                 receiver.money += amount
                 sender.save()
                 receiver.save()
-        except Creator.DoesNotExist:
-            return Response({"error": "Receiver not found"}, status=status.HTTP_404_NOT_FOUND)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                sender.refresh_from_db()
+                receiver.refresh_from_db()
 
-        return Response({"status": "Money transferred"}, status=status.HTTP_200_OK)
+        except Creator.DoesNotExist:
+            return Response(
+                {"error": "Receiver not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response(
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response(
+            {"status": f"Money transferred from {sender.name} ( {sender.money}$ left ) to {receiver.name} ( {receiver.money}$ left )"},
+            status=status.HTTP_200_OK
+        )
