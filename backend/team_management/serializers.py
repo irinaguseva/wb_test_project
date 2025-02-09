@@ -2,6 +2,11 @@ from rest_framework import serializers
 from .models import Creator, Team, Member, TeamApplication
 
 
+class TransferMoneySerializer(serializers.Serializer):
+    receiver_id = serializers.IntegerField(required=True)
+    amount = serializers.FloatField(required=True, min_value=0)
+
+
 class CreatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Creator
